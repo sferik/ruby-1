@@ -1379,6 +1379,26 @@ rb_file_chardev_p(VALUE obj, VALUE fname)
 
 /*
  * call-seq:
+ *    File.empty?(file_name)   -> true or false
+ *
+ * Returns +false+ if +file_name+ doesn't exist or has zero size, +true+
+ * otherwise.
+ *
+ * _file_name_ can be an IO object.
+ */
+
+static VALUE
+rb_file_empty_p(VALUE obj, VALUE fname)
+{
+    struct stat st;
+
+    if (rb_stat(fname, &st) < 0) return Qtrue;
+    if (st.st_size == 0) return Qtrue;
+    return Qfalse;
+}
+
+/*
+ * call-seq:
  *    File.exist?(file_name)    ->  true or false
  *    File.exists?(file_name)   ->  true or false
  *
@@ -5605,6 +5625,7 @@ Init_File(void)
     rb_cFile = rb_define_class("File", rb_cIO);
 
     define_filetest_function("directory?", rb_file_directory_p, 1);
+    define_filetest_function("empty?", rb_file_empty_p, 1);
     define_filetest_function("exist?", rb_file_exist_p, 1);
     define_filetest_function("exists?", rb_file_exists_p, 1);
     define_filetest_function("readable?", rb_file_readable_p, 1);

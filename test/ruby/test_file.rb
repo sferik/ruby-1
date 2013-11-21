@@ -40,6 +40,20 @@ class TestFile < Test::Unit::TestCase
 
   include TestEOF::Seek
 
+  def test_empty_file_is_empty
+    file = Tempfile.new("")
+    assert File.empty?(file)
+    file.write(" ")
+    file.flush
+    refute File.empty?(file)
+  end
+
+  def test_nonexistant_file_is_empty
+    file = Tempfile.new(" ")
+    File.unlink(file)
+    assert File.empty?(file)
+  end
+
   def test_empty_file_bom
     bug6487 = '[ruby-core:45203]'
     Tempfile.create(__method__.to_s) {|f|
